@@ -194,6 +194,7 @@ void FD1Solver::compute_numerical_diffusion_flux()
 VectorField FD1Solver::get_numerical_flux_gradient(const VectorField & un)
 {
   m_un = un;
+
   compute_un_derivatives();
   compute_intermediate_un_values();
   compute_localSpeed();
@@ -208,6 +209,14 @@ VectorField FD1Solver::get_numerical_flux_gradient(const VectorField & un)
 	+ ((1./m_deltaX[d])*unity)*( right_convection_flux[d] - left_convection_flux[d]
 				     - right_diffusion_flux[d] + left_diffusion_flux[d] );
     }
+
+  SField zero = flux_gradient[1];
+  zero = 0;
+  if( flux_gradient[1] == zero ) cout << "OK" << endl;
+  //TEST
+  //flux_gradient[0] = 0;
+  flux_gradient[1] = 0;
+  flux_gradient[2] = 0;
 
   return flux_gradient;
 }

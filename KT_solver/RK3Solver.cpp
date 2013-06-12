@@ -2,6 +2,7 @@
 #include "FD1Solver.h"
 #include <string>
 #include <boost/lexical_cast.hpp>
+#include "WriteVectorField.h"
 
 using namespace std;
 
@@ -19,6 +20,11 @@ void RK3Solver::get_solution(string name, double dt)
   Vector<double> lowerLeftCorner = m_spatialSolver->get_lowerLeftCorner();
   fstream data;
   string path;
+
+
+  // used in write_VectorField
+  VectorField pos = m_spatialSolver->get_position();
+
 
   VectorField u;
   VectorField df;
@@ -53,6 +59,13 @@ void RK3Solver::get_solution(string name, double dt)
 	  data.open(path.c_str(), ios::out);
 	  u[0].write_in_file(data, deltaX, lowerLeftCorner);
 	  data.close();
+
+	  path =  "Results/velTEST_" + boost::lexical_cast<string>(writingCounter) + ".tsv";
+	  data.open(path.c_str(), ios::out);
+	  VectorField velocity = u.drop(0);
+	  write_VectorField(velocity, pos, data);
+	  data.close();
+
 	  writingCounter++;
         }
       m_un = u;
