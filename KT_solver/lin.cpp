@@ -18,7 +18,8 @@
 #include "timeSolver.h"
 #include "EulerSolver.h"
 //#include "RK2Solver.h"
-//#include "RK3Solver.h"
+#include "RK3Solver.h"
+
 #include "ScalarField.h"
 #include "PeriodicField.h"
 #include "NullField.h"
@@ -57,8 +58,8 @@ int main()
   cout << "solved dim:" << eq->get_solved_dimensions() << endl;
 
   double dt = 0.005; double T = 10;
-  EulerSolver ts(dt, T, &sol, u0);
-  ts.get_solution("linear2D",1);
+  RK3Solver ts(dt, T, &sol, u0);
+  ts.get_solution("linear2DRK",1);
 
   return 0;
 }
