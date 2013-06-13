@@ -9,6 +9,7 @@
 #include "NSFlux.h"
 #include "Flume2DConvectionFlux.h"
 #include "Flume2DConvectionFluxNoVel.h"
+#include "Flume2DSource.h"
 #include "Equation.h"
 #include "FD1Solver.h"
 #include "timeSolver.h"
@@ -30,28 +31,31 @@ int main()
 {
   int dim = 2;
   Vector<double> dx(dim,0.05); dx[1] = 0.01; Vector<double> xI(dim); xI[0]=10; xI[1]=1; Vector<double> llc(dim,0); llc[0]=-xI[0];
-  //Flux *ptrDF = new ZeroFlux(2,3);
   Flux *ptrCF = new Flume2DConvectionFluxNoVel();
-  Equation *eq = new Equation(ptrCF); //don't forget to set the sr and velocity somewhere!!
+  Flux *ptrDF = new ZeroFlux(2,1);
+  Flux *ptrS = new Flume2DSource();
+  Equation *eq = new Equation(ptrCF, ptrDF, ptrS); //don't forget to set the sr and velocity somewhere!!
   FD1Solver sol(dx, xI, eq, llc);
 
   Vector<int> xr (dim); for(int d=0;d<dim;d++) xr[d] = xI[d]/dx[d];
   VectorField pos = sol.get_position();
 
-  //Sets initial fields and writes the data in files in the Results/Flume2D_initial/ folder
+  //Sets initial fields 
   VectorField phi(1, SField (xr));
   SField bound(xr);
   VectorField u0(dim, SField (xr));
+  SField dvdy0 (xr);
   for(int it=0;it<phi[0].get_size();++it)
     {
       phi[0][it] = phi0(pos[0][it], pos[1][it]);
       bound[it] = boundary(pos[0][it], pos[1][it]);
       u0[0][it] = u(pos[0][it], pos[1][it]);
       u0[1][it] = w(pos[0][it], pos[1][it]);
+      dvdy0[it] = dvdy(pos[0][it], pos[1][it]);
     }
   // the velocity field is null outside the flow, as well as the sr
   u0 = bound*u0; //phi[0] = bound*phi[0];
-  SField sr = 0.35*bound; ptrCF->set_parameter(sr);
+  SField sr = 0.035*bound; ptrCF->set_parameter(sr); ptrS->set_parameter(dvdy0);
 
   // // specifies the value of the solved field on the surface enclosing the intergration domain (Dirichlet conditions)
   
@@ -87,7 +91,7 @@ int main()
 
   double dt = 0.005; double T = 100;
   RK3Solver ts(dt, T, &sol, phi);
-  ts.get_solution("Flume2D1eqhighsr",1);
+  ts.get_solution("Flume2D1eqSource",1);
 
   return 0;
 }

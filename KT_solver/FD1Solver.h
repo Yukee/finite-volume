@@ -124,11 +124,15 @@ class FD1Solver
   VectorField right_localSpeed;
   VectorField left_localSpeed;
 
+  VectorField source_term;
+
   void compute_un_derivatives();
   void compute_intermediate_un_values();
   void compute_localSpeed();
   void compute_numerical_convection_flux();
   void compute_numerical_diffusion_flux();
+  void compute_source_term();
+
   double minmod(double a, double b);
   double three_pts_derivative(int it, int d, int i); //du/dx at point get_pos(it) in the x or y direction
 

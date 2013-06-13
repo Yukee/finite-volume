@@ -13,6 +13,12 @@ double Sech(double x)
   return 1/cosh(x);
 }
 
+double Csch(double x)
+{
+  if(x==0) std::cout << "division by zero in Flume2D.h" << std::endl;
+  return 1/sinh(x);
+}
+
 // complicated
 // derivative of the stream function wrt x, ie -1*{ depth averaged v velocity in the travelling frame }
 double dpsidx(double x)
@@ -66,6 +72,13 @@ double v(double x, double z)
 double w(double x, double z)
 {
   return uF*(1-alpha)*(z*z*dhdx(x)/pow(h(x),2)) + (1/pow(h(x),2))*(dhdx(x)*dpsidy(x) - dhdy(x)*dpsidx(x))*(alpha+2*(1-alpha)*z/h(x))*z;
+}
+
+// dv/dy in the centre plane
+
+double dvdy(double x, double z)
+{
+  return ((1 + 2*n)*U*Csch(x)*Sech(x)*(2*z*(-1 + alpha) - alpha*sqrt(-tanh(x))))/((1 + 2*m)*(1 + 2*m + 2*n));
 }
 
 // initial concentration of small particules
