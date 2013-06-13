@@ -72,7 +72,7 @@ double w(double x, double z)
 double phi0(double x, double z)
 {
   double phi0 = 0;
-  if(z <= 0.95*h(x) && z >= 0) phi0 = 1;
+  if(z < 0.95*h(x) && z >= 0) phi0 = 1;
   return phi0;
 }
 
@@ -81,7 +81,7 @@ double boundary(double x, double z)
 {
   x+=shift;
   double boundary = 0;
-  if(z <= h(x) && z >= 0) boundary = 1;
+  if(z < h(x) && z >= 0) boundary = 1;
   return boundary;
 }
 

@@ -99,6 +99,15 @@ PrescribedField & PrescribedField::operator=(const double & k)
   return *this;
 } 
 
+PrescribedField operator+(const double & k, const PrescribedField & u)
+{
+    PrescribedField temp(u.m_r);
+    for(unsigned int i=0; i<temp.m_data_len; i++) temp.m_data[i] = k +u.m_data[i];
+
+    for(unsigned int i=0;i<2*u.m_r_len;i++) temp.m_bounds[i] = operator+(k, u.m_bounds[i]);
+    return temp;
+}
+
 /************************************************/
 
 
@@ -134,12 +143,6 @@ ostream  & operator<<(ostream & output, const PrescribedField & u)
     return output;
 }
 
-PrescribedField operator+(const double & k, const PrescribedField & u)
-{
-    PrescribedField temp(u.m_r);
-    for(unsigned int i=0; i<temp.m_data_len; i++) temp.m_data[i] = k +u.m_data[i];
-    return temp;
-}
 
 PrescribedField operator+(const PrescribedField & u, const PrescribedField & v)
 {
@@ -152,6 +155,9 @@ PrescribedField operator+(const PrescribedField & u, const PrescribedField & v)
 
     PrescribedField temp(u.m_r);
     for(unsigned int i=0; i<temp.m_data_len; i++) temp.m_data[i] = u.m_data[i] + v.m_data[i];
+
+    for(unsigned int i=0;i<2*u.m_r_len;i++) temp.m_bounds[i] = operator+(u.m_bounds[i], v.m_bounds[i]);
+
     return temp;
 }
 
@@ -159,6 +165,9 @@ PrescribedField operator-(const double & k, const PrescribedField & u)
 {
     PrescribedField temp(u.m_r);
     for(unsigned int i=0; i<temp.m_data_len; i++) temp.m_data[i] = k - u.m_data[i];
+
+    for(unsigned int i=0;i<2*u.m_r_len;i++) temp.m_bounds[i] = operator-(k, u.m_bounds[i]);
+
     return temp;
 }
 
@@ -173,20 +182,9 @@ PrescribedField operator-(const PrescribedField & u, const PrescribedField & v)
 
     PrescribedField temp(u.m_r);
     for(unsigned int i=0; i<temp.m_data_len; i++) temp.m_data[i] = u.m_data[i] - v.m_data[i];
-    return temp;
-}
 
-PrescribedField operator/(const PrescribedField & u, const PrescribedField & v)
-{
-#ifdef DEBUG
-    if(u.m_r_len != v.m_r_len) throw invalid_argument("In operator/: trying to divide two fields of different dimensions");
-    bool same_ranges = 1;
-    for(unsigned int i=0; i<u.m_r_len; i++) same_ranges*=(u.m_r[i] == v.m_r[i]);
-    if(!same_ranges) throw invalid_argument("In operator/: trying to divide two fields of different ranges");
-#endif
+    for(unsigned int i=0;i<2*u.m_r_len;i++) temp.m_bounds[i] = operator-(u.m_bounds[i], v.m_bounds[i]);
 
-    PrescribedField temp(u.m_r);
-    for(unsigned int i=0; i<temp.m_data_len; i++) temp.m_data[i] = u.m_data[i]/v.m_data[i];
     return temp;
 }
 
@@ -194,6 +192,9 @@ PrescribedField operator*(const double & k, const PrescribedField & u)
 {
     PrescribedField temp(u.m_r);
     for(unsigned int i=0; i<temp.m_data_len; i++) temp.m_data[i] = k*u.m_data[i];
+
+    for(unsigned int i=0;i<2*u.m_r_len;i++) temp.m_bounds[i] = operator*(k, u.m_bounds[i]);
+
     return temp;
 }
 
@@ -208,6 +209,9 @@ PrescribedField operator*(const PrescribedField & u, const PrescribedField & v)
 
     PrescribedField temp(u.m_r);
     for(unsigned int i=0; i<temp.m_data_len; i++) temp.m_data[i] = u.m_data[i]*v.m_data[i];
+
+    for(unsigned int i=0;i<2*u.m_r_len;i++) temp.m_bounds[i] = operator*(u.m_bounds[i], v.m_bounds[i]);
+
     return temp;
 }
 
@@ -229,9 +233,11 @@ PrescribedField PrescribedField::max_field(const PrescribedField u) const
     if(!same_ranges) throw invalid_argument("In max_field: trying to compare two fields of different ranges");
 #endif
 
-    PrescribedField temp;
-    temp=u;
+    PrescribedField temp(u.m_r);
     for(unsigned int i=0; i<temp.m_data_len; i++) temp.m_data[i]=max( fabs(u.m_data[i]), fabs((*this).m_data[i]) );
+
+    for(unsigned int i=0;i<2*u.m_r_len;i++) temp.m_bounds[i] = ((*this).m_bounds[i]).ScalarField::max_field(u.m_bounds[i]);
+
     return temp;
 }
 
@@ -250,6 +256,9 @@ double PrescribedField::get_max() const
 PrescribedField PrescribedField::module() const
 {
   for(unsigned int it=0;it<m_data_len;++it) m_data[it] = max( m_data[it], -m_data[it] );
+
+  for(unsigned int i=0;i<2*m_r_len;i++) m_bounds[i] = m_bounds[i].ScalarField::module();
+
   return *this;
 }
 

@@ -60,12 +60,6 @@ void RK3Solver::get_solution(string name, double dt)
 	  u[0].write_in_file(data, deltaX, lowerLeftCorner);
 	  data.close();
 
-	  path =  "Results/velTEST_" + boost::lexical_cast<string>(writingCounter) + ".tsv";
-	  data.open(path.c_str(), ios::out);
-	  VectorField velocity = u.drop(0);
-	  write_VectorField(velocity, pos, data);
-	  data.close();
-
 	  writingCounter++;
         }
       m_un = u;

@@ -8,6 +8,7 @@
 #include "BurgersFlux1D.h"
 #include "NSFlux.h"
 #include "Flume2DConvectionFlux.h"
+#include "Flume2DConvectionFluxNoVel.h"
 #include "Equation.h"
 #include "FD1Solver.h"
 #include "timeSolver.h"
@@ -28,84 +29,65 @@ using namespace std;
 int main()
 {
   int dim = 2;
-  Vector<double> dx(dim,0.05); Vector<double> xI(dim); xI[0]=4; xI[1]=1; Vector<double> llc(dim,0); llc[0]=-xI[0];
+  Vector<double> dx(dim,0.05); dx[1] = 0.01; Vector<double> xI(dim); xI[0]=10; xI[1]=1; Vector<double> llc(dim,0); llc[0]=-xI[0];
   //Flux *ptrDF = new ZeroFlux(2,3);
-  Flux *ptrCF = new Flume2DConvectionFlux();
-  Equation *eq = new Equation(ptrCF); //don't forget to set the sr somewhere!!
+  Flux *ptrCF = new Flume2DConvectionFluxNoVel();
+  Equation *eq = new Equation(ptrCF); //don't forget to set the sr and velocity somewhere!!
   FD1Solver sol(dx, xI, eq, llc);
 
   Vector<int> xr (dim); for(int d=0;d<dim;d++) xr[d] = xI[d]/dx[d];
   VectorField pos = sol.get_position();
 
   //Sets initial fields and writes the data in files in the Results/Flume2D_initial/ folder
-  SField phi(xr);
+  VectorField phi(1, SField (xr));
   SField bound(xr);
   VectorField u0(dim, SField (xr));
-  for(int it=0;it<phi.get_size();++it)
+  for(int it=0;it<phi[0].get_size();++it)
     {
-      phi[it] = phi0(pos[0][it], pos[1][it]);
+      phi[0][it] = phi0(pos[0][it], pos[1][it]);
       bound[it] = boundary(pos[0][it], pos[1][it]);
       u0[0][it] = u(pos[0][it], pos[1][it]);
       u0[1][it] = w(pos[0][it], pos[1][it]);
     }
   // the velocity field is null outside the flow, as well as the sr
-  u0 = bound*u0; phi = bound*phi;
-  SField sr = 0.035*bound; ptrCF->set_parameter(sr);
+  u0 = bound*u0; //phi[0] = bound*phi[0];
+  SField sr = 0.35*bound; ptrCF->set_parameter(sr);
 
-  // specifies the value of the solved field on the surface enclosing the intergration domain (Dirichlet conditions)
+  // // specifies the value of the solved field on the surface enclosing the intergration domain (Dirichlet conditions)
   
-  ScalarField phiWest (xr.drop(0)); 
-  for(int it=0;it<phiWest.get_size();++it) phiWest[it] = phi0( llc[0]-dx[0] , pos[1][it] );
-  phi.set_bound(0, -1, phiWest);
-  ScalarField phiSouth (xr.drop(1)); phi.set_bound(1, -1, phiSouth);
-  for(int it=0;it<phiSouth.get_size();++it) phiSouth[it] = 1;//phi0( pos[0][it], llc[1]-dx[1] );
-  phi.set_bound(1, -1, phiSouth);
-  //phi is null at the East and North boundary surfaces, and the velocity field is null at the boundaries
-  ScalarField zeroVert(xr.drop(0)); zeroVert = 0; ScalarField zeroHoriz(xr.drop(1)); zeroHoriz = 0;
-  phi.set_bound(1, 1, zeroHoriz); phi.set_bound(0, 1, zeroVert);
-  for(int d=0;d<dim;d++)
-    {
-      for(int orient=-1;orient<2;orient+=2)
-  	{
-  	  u0[d].set_bound(1, orient, zeroHoriz);
-  	  u0[d].set_bound(0, orient, zeroVert);
-  	} 
-    }
-
-
-  // the actual solved field is a vector comtaining the velocity and the concentration fields
-  VectorField uInit (3); uInit[0] = phi; uInit[1] = u0[0]; uInit[2] = u0[1];
+  // ScalarField phiWest (xr.drop(0)); 
+  // for(int it=0;it<phiWest.get_size();++it) phiWest[it] = 1;//phi0( llc[0]-dx[0] , pos[1][it] );
+  // phi[0].set_bound(0, -1, phiWest);
+  // ScalarField phiSouth (xr.drop(1));
+  // for(int it=0;it<phiSouth.get_size();++it) phiSouth[it] = 1; //phi0( pos[0][it], llc[1]-dx[1] );
+  // phi[0].set_bound(1, -1, phiSouth);
+  // //phi is null at the East and North boundary surfaces, and the velocity field is null at the boundaries
+  // ScalarField zeroVert(xr.drop(0)); zeroVert = 0; ScalarField zeroHoriz(xr.drop(1)); zeroHoriz = 0;
+  // phi[0].set_bound(1, 1, zeroHoriz); phi[0].set_bound(0, 1, zeroVert);
+  
+  // sets the velocity field in the flux function
+  ptrCF->set_parameter(u0);
   
   // plots the various fields and domain
-  // fstream init;
-  // init.open("Results/Flume2D_initial/phi0.tsv",ios::out);
-  // phi.write_in_file_matrixform(init);
-  // fstream speed;
-  // speed.open("Results/Flume2D_initial/speed.tsv",ios::out);
-  // write_VectorField(u0, pos, speed);
-  // fstream b;
-  // b.open("Results/Flume2D_initial/boundary.tsv",ios::out);
-  // bound.write_in_file_matrixform(b);
+  fstream init;
+  init.open("Results/Flume2D_initial/phi0.tsv",ios::out);
+  phi[0].write_in_file_matrixform(init);
+  fstream speed;
+  speed.open("Results/Flume2D_initial/speed.tsv",ios::out);
+  write_VectorField(u0, pos, speed);
+  fstream b;
+  b.open("Results/Flume2D_initial/boundary.tsv",ios::out);
+  bound.write_in_file_matrixform(b);
+  fstream f;
+  f.open("Results/Flume2D_initial/convection_flux.tsv",ios::out);
+  VectorField jac(2);
+  jac[0] = ptrCF->get_max_eigenvalue(phi, 0);
+  jac[1] = ptrCF->get_max_eigenvalue(phi, 1);
+  write_VectorField(jac, pos, f);
 
-  // fstream f;
-  // f.open("Results/Flume2D_initial/convection_flux.tsv",ios::out);
-  // VectorField jac(2);
-  // jac[0] = ptrCF->get_max_eigenvalue(uInit, 0);
-  // jac[1] = ptrCF->get_max_eigenvalue(uInit, 1);
-  // write_VectorField(jac, pos, f);
-
-  // fstream phibWest;
-  // phibWest.open("Results/Flume2D_initial/phibWest.tsv",ios::out);
-  // Vector<int> x(2); x[0] = 1; x[1] = 0; Vector<int> y(2); y[0] = 0; y[1] = 1;
-  // for(int i=0;i<xr[1];i++) phibWest << pos[0](i*y) -dx[0] << "\t" << pos[1](i*y) << "\t" << uInit[0](i*y - x) << endl;
-
-  // fstream phibSouth;
-  // phibSouth.open("Results/Flume2D_initial/phibSouth.tsv",ios::out);
-  // for(int i=0;i<xr[0];i++) phibSouth << pos[0](i*x) << "\t" << pos[1](i*x) - dx[1] << "\t" << uInit[0](i*x - y) << endl;
-
-  double dt = 0.005; double T = 20;
-  RK3Solver ts(dt, T, &sol, uInit);
-  ts.get_solution("Flume2DTEST",1);
+  double dt = 0.005; double T = 100;
+  RK3Solver ts(dt, T, &sol, phi);
+  ts.get_solution("Flume2D1eqhighsr",1);
 
   return 0;
 }

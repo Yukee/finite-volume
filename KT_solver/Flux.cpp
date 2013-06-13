@@ -41,3 +41,7 @@ void Flux::set_parameter(const SField & param)
 {
 	m_param = param;
 }
+
+void Flux::set_parameter(const VectorField & param)
+{
+}

@@ -150,12 +150,12 @@ void FD1Solver::compute_localSpeed()
 
   for(int dir=0;dir<m_n;dir++)
     {
-      upperSpeed = m_eq->get_max_eigenvalue(upper_right_intermediate_un_values[dir], dir).module();
-      lowerSpeed = m_eq->get_max_eigenvalue(lower_right_intermediate_un_values[dir], dir).module();
+      upperSpeed = m_eq->get_max_eigenvalue(upper_right_intermediate_un_values[dir], dir);
+      lowerSpeed = m_eq->get_max_eigenvalue(lower_right_intermediate_un_values[dir], dir);
       right_localSpeed[dir] = upperSpeed.max_field(lowerSpeed);
 
-      upperSpeed = m_eq->get_max_eigenvalue(upper_left_intermediate_un_values[dir], dir).module();
-      lowerSpeed = m_eq->get_max_eigenvalue(lower_left_intermediate_un_values[dir], dir).module();
+      upperSpeed = m_eq->get_max_eigenvalue(upper_left_intermediate_un_values[dir], dir);
+      lowerSpeed = m_eq->get_max_eigenvalue(lower_left_intermediate_un_values[dir], dir);
       left_localSpeed[dir] = upperSpeed.max_field(lowerSpeed);
     }
 }
@@ -200,23 +200,14 @@ VectorField FD1Solver::get_numerical_flux_gradient(const VectorField & un)
   compute_localSpeed();
   compute_numerical_convection_flux();
   compute_numerical_diffusion_flux();
-  VectorField flux_gradient(m_m, SField (m_nxSteps));
-  for(int i=0;i<m_m;i++) flux_gradient[i] = 0;
 
+  VectorField flux_gradient(m_m, SField (m_nxSteps));
   for(int d=0;d<m_n;d++)
     { 
       flux_gradient = flux_gradient 
-	+ ((1./m_deltaX[d])*unity)*( right_convection_flux[d] - left_convection_flux[d]
-				     - right_diffusion_flux[d] + left_diffusion_flux[d] );
+	+ ((1./m_deltaX[d])*unity)*( right_convection_flux[d] - left_convection_flux[d]);
+      // - right_diffusion_flux[d] + left_diffusion_flux[d] );
     }
-
-  SField zero = flux_gradient[1];
-  zero = 0;
-  if( flux_gradient[1] == zero ) cout << "OK" << endl;
-  //TEST
-  //flux_gradient[0] = 0;
-  flux_gradient[1] = 0;
-  flux_gradient[2] = 0;
 
   return flux_gradient;
 }

@@ -8,7 +8,7 @@
 #include "PrescribedField.h"
 #include "ImmersedField.h"
 
-typedef PrescribedField SField;
+typedef ImmersedField SField;
 typedef Vector<SField> VectorField;
 typedef Vector<VectorField> TensorField;
 
@@ -42,7 +42,9 @@ class Flux
   // returns the maximal eigenvalue (in module) of the restriction to 1 space dimension of the jacobian
   virtual SField get_max_eigenvalue(const VectorField &, const int);
   
+  // to pass the value of a parameter of the flux
   virtual void set_parameter(const SField &);
+  virtual void set_parameter(const VectorField &);
 
   int get_space_dimensions();
   int get_solved_dimensions();
