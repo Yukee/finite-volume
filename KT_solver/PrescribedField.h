@@ -28,6 +28,11 @@ class PrescribedField : public ScalarField
  {
    return m_bounds;
  }
+
+ inline void set_bounds(Vector<ScalarField> bounds)
+ {
+   m_bounds = bounds;
+ }
 	 
  virtual ~PrescribedField();
  

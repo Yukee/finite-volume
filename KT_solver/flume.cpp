@@ -30,7 +30,7 @@ using namespace std;
 int main()
 {
   int dim = 2;
-  Vector<double> dx(dim,0.05); dx[1] = 0.01; Vector<double> xI(dim); xI[0]=10; xI[1]=1; Vector<double> llc(dim,0); llc[0]=-xI[0];
+  Vector<double> dx(dim,0.05); dx[1] = 0.01; Vector<double> xI(dim); xI[0]=5; xI[1]=1; Vector<double> llc(dim,0); llc[0]=-xI[0];
   Flux *ptrCF = new Flume2DConvectionFluxNoVel();
   Flux *ptrDF = new ZeroFlux(2,1);
   Flux *ptrS = new Flume2DSource();
@@ -55,20 +55,29 @@ int main()
     }
   // the velocity field is null outside the flow, as well as the sr
   u0 = bound*u0; //phi[0] = bound*phi[0];
-  SField sr = 0.035*bound; ptrCF->set_parameter(sr); ptrS->set_parameter(dvdy0);
+  SField sr = 4*0.035*bound; ptrCF->set_parameter(sr); ptrS->set_parameter(dvdy0);
 
-  // // specifies the value of the solved field on the surface enclosing the intergration domain (Dirichlet conditions)
+  // specifies the value of the solved field on the surface enclosing the intergration domain (Dirichlet conditions)
   
-  // ScalarField phiWest (xr.drop(0)); 
-  // for(int it=0;it<phiWest.get_size();++it) phiWest[it] = 1;//phi0( llc[0]-dx[0] , pos[1][it] );
-  // phi[0].set_bound(0, -1, phiWest);
-  // ScalarField phiSouth (xr.drop(1));
-  // for(int it=0;it<phiSouth.get_size();++it) phiSouth[it] = 1; //phi0( pos[0][it], llc[1]-dx[1] );
-  // phi[0].set_bound(1, -1, phiSouth);
-  // //phi is null at the East and North boundary surfaces, and the velocity field is null at the boundaries
-  // ScalarField zeroVert(xr.drop(0)); zeroVert = 0; ScalarField zeroHoriz(xr.drop(1)); zeroHoriz = 0;
-  // phi[0].set_bound(1, 1, zeroHoriz); phi[0].set_bound(0, 1, zeroVert);
+  ScalarField phiWest (xr.drop(0)); 
+  for(int it=0;it<phiWest.get_size();++it) phiWest[it] = phi0( llc[0]-dx[0] , llc[1]+it*dx[1] );
+  phi[0].set_bound(0, -1, phiWest);
+  ScalarField phiSouth (xr.drop(1));
+  for(int it=0;it<phiSouth.get_size();++it) phiSouth[it] = 1; //phi0( pos[0][it], llc[1]-dx[1] );
+  phi[0].set_bound(1, -1, phiSouth);
+  ScalarField zeroVert(xr.drop(0)); zeroVert = 0; ScalarField zeroHoriz(xr.drop(1)); zeroHoriz = 0;
+  phi[0].set_bound(1, 1, zeroHoriz); phi[0].set_bound(0, 1, zeroVert);
+
+  ScalarField uWest (xr.drop(0)); for(int it=0;it<uWest.get_size();++it) uWest[it] = u( llc[0]-dx[0] , llc[1]+it*dx[1] ); u0[0].set_bound(0,-1,uWest);
+  ScalarField wWest (xr.drop(0)); for(int it=0;it<wWest.get_size();++it) wWest[it] = w( llc[0]-dx[0] , llc[1]+it*dx[1] ); u0[1].set_bound(0,-1,wWest);
+  ScalarField uSouth (xr.drop(1)); for(int it=0;it<uSouth.get_size();++it) uSouth[it] = u( llc[0]+it*dx[0] , llc[1]-dx[1] ); u0[0].set_bound(1,-1,uSouth);
+  ScalarField wSouth (xr.drop(1)); for(int it=0;it<wSouth.get_size();++it) wSouth[it] = w( llc[0]+it*dx[0] , llc[1]-dx[1] ); u0[1].set_bound(1,-1,wSouth);
   
+  // check
+  fstream initb;
+  initb.open("Results/Flume2D_initial/phi0b.tsv",ios::out);
+  initb << phi[0].get_bounds();
+
   // sets the velocity field in the flux function
   ptrCF->set_parameter(u0);
   

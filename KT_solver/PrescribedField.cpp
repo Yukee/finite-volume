@@ -104,7 +104,7 @@ PrescribedField operator+(const double & k, const PrescribedField & u)
     PrescribedField temp(u.m_r);
     for(unsigned int i=0; i<temp.m_data_len; i++) temp.m_data[i] = k +u.m_data[i];
 
-    for(unsigned int i=0;i<2*u.m_r_len;i++) temp.m_bounds[i] = operator+(k, u.m_bounds[i]);
+    // for(unsigned int i=0;i<2*u.m_r_len;i++) temp.m_bounds[i] = operator+(k, u.m_bounds[i]);
     return temp;
 }
 
@@ -156,7 +156,7 @@ PrescribedField operator+(const PrescribedField & u, const PrescribedField & v)
     PrescribedField temp(u.m_r);
     for(unsigned int i=0; i<temp.m_data_len; i++) temp.m_data[i] = u.m_data[i] + v.m_data[i];
 
-    for(unsigned int i=0;i<2*u.m_r_len;i++) temp.m_bounds[i] = operator+(u.m_bounds[i], v.m_bounds[i]);
+    // for(unsigned int i=0;i<2*u.m_r_len;i++) temp.m_bounds[i] = operator+(u.m_bounds[i], v.m_bounds[i]);
 
     return temp;
 }
@@ -166,7 +166,7 @@ PrescribedField operator-(const double & k, const PrescribedField & u)
     PrescribedField temp(u.m_r);
     for(unsigned int i=0; i<temp.m_data_len; i++) temp.m_data[i] = k - u.m_data[i];
 
-    for(unsigned int i=0;i<2*u.m_r_len;i++) temp.m_bounds[i] = operator-(k, u.m_bounds[i]);
+    // for(unsigned int i=0;i<2*u.m_r_len;i++) temp.m_bounds[i] = operator-(k, u.m_bounds[i]);
 
     return temp;
 }
@@ -183,7 +183,7 @@ PrescribedField operator-(const PrescribedField & u, const PrescribedField & v)
     PrescribedField temp(u.m_r);
     for(unsigned int i=0; i<temp.m_data_len; i++) temp.m_data[i] = u.m_data[i] - v.m_data[i];
 
-    for(unsigned int i=0;i<2*u.m_r_len;i++) temp.m_bounds[i] = operator-(u.m_bounds[i], v.m_bounds[i]);
+    // for(unsigned int i=0;i<2*u.m_r_len;i++) temp.m_bounds[i] = operator-(u.m_bounds[i], v.m_bounds[i]);
 
     return temp;
 }
@@ -193,7 +193,7 @@ PrescribedField operator*(const double & k, const PrescribedField & u)
     PrescribedField temp(u.m_r);
     for(unsigned int i=0; i<temp.m_data_len; i++) temp.m_data[i] = k*u.m_data[i];
 
-    for(unsigned int i=0;i<2*u.m_r_len;i++) temp.m_bounds[i] = operator*(k, u.m_bounds[i]);
+    // for(unsigned int i=0;i<2*u.m_r_len;i++) temp.m_bounds[i] = operator*(k, u.m_bounds[i]);
 
     return temp;
 }
@@ -210,7 +210,7 @@ PrescribedField operator*(const PrescribedField & u, const PrescribedField & v)
     PrescribedField temp(u.m_r);
     for(unsigned int i=0; i<temp.m_data_len; i++) temp.m_data[i] = u.m_data[i]*v.m_data[i];
 
-    for(unsigned int i=0;i<2*u.m_r_len;i++) temp.m_bounds[i] = operator*(u.m_bounds[i], v.m_bounds[i]);
+    // for(unsigned int i=0;i<2*u.m_r_len;i++) temp.m_bounds[i] = operator*(u.m_bounds[i], v.m_bounds[i]);
 
     return temp;
 }
@@ -236,7 +236,7 @@ PrescribedField PrescribedField::max_field(const PrescribedField u) const
     PrescribedField temp(u.m_r);
     for(unsigned int i=0; i<temp.m_data_len; i++) temp.m_data[i]=max( fabs(u.m_data[i]), fabs((*this).m_data[i]) );
 
-    for(unsigned int i=0;i<2*u.m_r_len;i++) temp.m_bounds[i] = ((*this).m_bounds[i]).ScalarField::max_field(u.m_bounds[i]);
+    // for(unsigned int i=0;i<2*u.m_r_len;i++) temp.m_bounds[i] = ((*this).m_bounds[i]).ScalarField::max_field(u.m_bounds[i]);
 
     return temp;
 }
