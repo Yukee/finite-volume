@@ -3,8 +3,6 @@
 #include <math.h>
 using namespace std;
 
-#define DEBUG
-
 double & PrescribedField::operator()(Vector<int> component)
 {
   for(unsigned int d=0;d<m_r_len;d++) if(component[d] > m_r[d] || component[d] < -1)

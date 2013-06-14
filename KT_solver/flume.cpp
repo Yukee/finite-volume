@@ -30,7 +30,7 @@ using namespace std;
 int main()
 {
   int dim = 2;
-  Vector<double> dx(dim,0.05); dx[1] = 0.01; Vector<double> xI(dim); xI[0]=5; xI[1]=1; Vector<double> llc(dim,0); llc[0]=-xI[0];
+  Vector<double> dx(dim,0.05); dx[1] = 0.01; Vector<double> xI(dim); xI[0]=6; xI[1]=1; Vector<double> llc(dim,0); llc[0]=-xI[0];
   Flux *ptrCF = new Flume2DConvectionFluxNoVel();
   Flux *ptrDF = new ZeroFlux(2,1);
   Flux *ptrS = new Flume2DSource();
