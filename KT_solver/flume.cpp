@@ -37,7 +37,7 @@ using namespace std;
 int main()
 {
   int dim = 2;
-  Vector<double> dx(dim,0.05); dx[1] = 0.01; Vector<double> xI(dim); xI[0]=6; xI[1]=1; Vector<double> llc(dim,0); llc[0]=-xI[0];
+  Vector<double> dx(dim,1); dx[1] = 0.01; Vector<double> xI(dim); xI[0]=2; xI[1]=1; Vector<double> llc(dim,0); llc[0]=-xI[0];
   Flux *ptrCF = new Flume2DConvectionFluxNoVel();
   Flux *ptrDF = new ZeroFlux(2,1);
   Flux *ptrS = new ZeroFlux(2,1);
@@ -105,7 +105,7 @@ int main()
   jac[1] = ptrCF->get_max_eigenvalue(phi, 1);
   write_VectorField(jac, pos, f);
 
-  double dt = 0.005; double T = 100;
+  double dt = 0.005; double T = 0.005;
   RK3Solver ts(dt, T, &sol, phi);
   ts.get_solution("Flume2DNoSource",1);
 

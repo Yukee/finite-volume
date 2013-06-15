@@ -50,12 +50,11 @@ void PrescribedField::resize_field(Vector<int> range)
 
     m_bounds.resize(2*m_r_len);
     Vector<int> range_surf = m_r;
-    //Vector< Vector<int> > b = range_surf.get_base_vectors(1,0); for(unsigned int i=0;i<m_r_len;i++) range_surf = range_surf + 2*b[i];
 	 
     for(unsigned int d=0;d<m_r_len;d++)
       {
-	m_bounds[2*d].resize_field(range_surf.drop(d));
-	m_bounds[2*d+1].resize_field(range_surf.drop(d));
+		m_bounds[2*d].resize_field(range_surf.drop(d));
+		m_bounds[2*d+1].resize_field(range_surf.drop(d));
       }
 
     m_data_len = 1;
@@ -71,8 +70,8 @@ Vector<int> PrescribedField::get_pos(int i) const
 
 PrescribedField & PrescribedField::operator=(const PrescribedField & u)
 {
-  m_bounds = u.m_bounds;
-
+	m_bounds = u.m_bounds;
+  
     if(!(&u == this))
     {
         m_r_len = u.m_r_len;

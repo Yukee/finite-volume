@@ -37,7 +37,7 @@ void RK3Solver::get_solution(string name, double dt)
 
   SField unity = m_spatialSolver->get_unity();
 
-  for(currenttime=0;currenttime<=m_T;currenttime += newDeltaT)
+  for(currenttime=0;currenttime<m_T;currenttime += newDeltaT)
     {
 
       newDeltaT = m_deltaT;
