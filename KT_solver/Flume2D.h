@@ -1,15 +1,22 @@
 #ifndef FLUME2D
 #define FLUME2D
 #include <math.h>
+#include <iostream>
 
 /* 2D setup in the centre plane for the flume problem.
 Assuming that H = W = 1. If not, multiply by the expression of H and W indicated in the commented text before each function. If "complicated" is indicated, you cannot just multiply by something and you will have to recalculate th expression depending and H and W. If nothing is indicated nothing is to be changed. */
 
-const static double U = 2.3; const static double uF = 2.; const static double alpha=0.5; const static int m = 2; const static int n = 4; const static double shift = 0.1;
+const static double U = 2.3; const static double uF = 2.; const static double alpha=0.5; const static int m = 2; const static int n = 4; const static double shift = 0.0;
 
 double Sech(double x)
 {
   return 1/cosh(x);
+}
+
+double Csch(double x)
+{
+  if(x==0) std::cout << "division by zero in Flume2D.h" << std::endl;
+  return 1/sinh(x);
 }
 
 // complicated
@@ -67,11 +74,19 @@ double w(double x, double z)
   return uF*(1-alpha)*(z*z*dhdx(x)/pow(h(x),2)) + (1/pow(h(x),2))*(dhdx(x)*dpsidy(x) - dhdy(x)*dpsidx(x))*(alpha+2*(1-alpha)*z/h(x))*z;
 }
 
+// dv/dy in the centre plane
+
+double dvdy(double x, double z)
+{
+  return ((1 + 2*n)*U*Csch(x)*Sech(x)*(2*z*(-1 + alpha) - alpha*sqrt(-tanh(x))))/((1 + 2*m)*(1 + 2*m + 2*n));
+}
+
 // initial concentration of small particules
 double phi0(double x, double z)
 {
+  x+=shift;
   double phi0 = 0;
-  if(z <= 0.95*h(x) && z >= 0) phi0 = 1;
+  if(z < 0.80*h(x) && z >= 0) phi0 = 1;
   return phi0;
 }
 
@@ -80,7 +95,7 @@ double boundary(double x, double z)
 {
   x+=shift;
   double boundary = 0;
-  if(z <= h(x) && z >= 0) boundary = 1;
+  if(z < h(x) && z >= 0) boundary = 1;
   return boundary;
 }
 

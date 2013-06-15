@@ -1,10 +1,12 @@
+#ifndef FLUME3D
+#define FLUME3D
 #include <math.h>
 
 /* Full 3D setup for the flume problem.
 Assuming that H = W = 1. If not, multiply by the expression of H and W indicated in the commented text before each function. If "complicated" is indicated, you cannot just multiply by something and you will have to recalculate th expression depending and H and W. If nothing is indicated nothing is to be changed.
 Everything can be further simplified in the centre plane. See Flume2D for the details. */
 
-const static double U = 2.3; const static double uF = 2; const static double alpha=0.5; const static int m = 2; const static int n= 4;
+const static double U = 2.3; const static double uF = 2; const static double alpha=0.5; const static int m = 2; const static int n= 4; const static double shift = 0.0;
 
 double Sech(double x)
 {
@@ -70,6 +72,7 @@ double w(double x, double y, double z)
 // initial concentration of small particules
 double phy0(double x, double y, double z)
 {
+  x+=shift;
   double phy0 = 0;
   if(z <= 0.95*h(x,y) && z >= 0) phy0 = 1;
   return phy0;
@@ -78,7 +81,10 @@ double phy0(double x, double y, double z)
 // returns 1 if within the domain of the flow
 double boundary(double x, double y, double z)
 {
+  x+=shift;
   double boundary = 0;
   if(z <= h(x,y) && z >= 0) boundary = 1;
   return boundary;
 }
+
+#endif

@@ -44,6 +44,8 @@ FD1Solver::FD1Solver(Vector<double> deltaX, Vector<double> xInterval, Equation *
   right_diffusion_flux = TensorField (m_n, VectorField (m_m, SField (m_nxSteps) ) );
   left_diffusion_flux = TensorField (m_n, VectorField (m_m, SField (m_nxSteps) ) );
 
+  source_term = VectorField (m_m, SField (m_nxSteps ) );
+
   un_derivatives = TensorField (m_n, VectorField (m_m, SField (m_nxSteps) ) );
 
   right_localSpeed = VectorField (m_n, SField (m_nxSteps ) );
@@ -150,12 +152,12 @@ void FD1Solver::compute_localSpeed()
 
   for(int dir=0;dir<m_n;dir++)
     {
-      upperSpeed = m_eq->get_max_eigenvalue(upper_right_intermediate_un_values[dir], dir).module();
-      lowerSpeed = m_eq->get_max_eigenvalue(lower_right_intermediate_un_values[dir], dir).module();
+      upperSpeed = m_eq->get_max_eigenvalue(upper_right_intermediate_un_values[dir], dir);
+      lowerSpeed = m_eq->get_max_eigenvalue(lower_right_intermediate_un_values[dir], dir);
       right_localSpeed[dir] = upperSpeed.max_field(lowerSpeed);
 
-      upperSpeed = m_eq->get_max_eigenvalue(upper_left_intermediate_un_values[dir], dir).module();
-      lowerSpeed = m_eq->get_max_eigenvalue(lower_left_intermediate_un_values[dir], dir).module();
+      upperSpeed = m_eq->get_max_eigenvalue(upper_left_intermediate_un_values[dir], dir);
+      lowerSpeed = m_eq->get_max_eigenvalue(lower_left_intermediate_un_values[dir], dir);
       left_localSpeed[dir] = upperSpeed.max_field(lowerSpeed);
     }
 }
@@ -190,24 +192,33 @@ void FD1Solver::compute_numerical_diffusion_flux()
 
 }
 
+void FD1Solver::compute_source_term()
+{
+  source_term = m_eq->get_source_term(m_un);
+}
+
+
 //the flux gradient may be infinite, if you take a too large time step.
 VectorField FD1Solver::get_numerical_flux_gradient(const VectorField & un)
 {
   m_un = un;
+
   compute_un_derivatives();
   compute_intermediate_un_values();
   compute_localSpeed();
   compute_numerical_convection_flux();
   compute_numerical_diffusion_flux();
-  VectorField flux_gradient(m_m, SField (m_nxSteps));
-  for(int i=0;i<m_m;i++) flux_gradient[i] = 0;
+  compute_source_term();
 
+  // adding everything to form the spatial part of the equation: {convective flux} - {diffusive flux} - {source term} 
+  VectorField flux_gradient(m_m, SField (m_nxSteps));
   for(int d=0;d<m_n;d++)
     { 
       flux_gradient = flux_gradient 
-	+ ((1./m_deltaX[d])*unity)*( right_convection_flux[d] - left_convection_flux[d]
-				     - right_diffusion_flux[d] + left_diffusion_flux[d] );
+	+ ((1./m_deltaX[d])*unity)*( right_convection_flux[d] - left_convection_flux[d]);
+      // - right_diffusion_flux[d] + left_diffusion_flux[d] );
     }
+  flux_gradient = flux_gradient - source_term;
 
   return flux_gradient;
 }
