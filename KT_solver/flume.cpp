@@ -2,7 +2,23 @@
 #include <fstream>
 #include <math.h>
 #include <limits.h>
+
+// Solvers
+#include "FD1Solver.h"
+#include "timeSolver.h"
+#include "EulerSolver.h"
+//#include "RK2Solver.h"
+#include "RK3Solver.h"
+
+// Containers
 #include "Vector.h"
+#include "ScalarField.h"
+#include "PeriodicField.h"
+#include "NullField.h"
+#include "PrescribedField.h"
+#include "Equation.h"
+
+// Functions
 #include "Flux.h"
 #include "ZeroFlux.h"
 #include "BurgersFlux1D.h"
@@ -10,16 +26,7 @@
 #include "Flume2DConvectionFlux.h"
 #include "Flume2DConvectionFluxNoVel.h"
 #include "Flume2DSource.h"
-#include "Equation.h"
-#include "FD1Solver.h"
-#include "timeSolver.h"
-#include "EulerSolver.h"
-//#include "RK2Solver.h"
-#include "RK3Solver.h"
-#include "ScalarField.h"
-#include "PeriodicField.h"
-#include "NullField.h"
-#include "PrescribedField.h"
+
 #include "WriteVectorField.h"
 
 // Flume pb
@@ -33,7 +40,7 @@ int main()
   Vector<double> dx(dim,0.05); dx[1] = 0.01; Vector<double> xI(dim); xI[0]=6; xI[1]=1; Vector<double> llc(dim,0); llc[0]=-xI[0];
   Flux *ptrCF = new Flume2DConvectionFluxNoVel();
   Flux *ptrDF = new ZeroFlux(2,1);
-  Flux *ptrS = new Flume2DSource();
+  Flux *ptrS = new ZeroFlux(2,1);
   Equation *eq = new Equation(ptrCF, ptrDF, ptrS); //don't forget to set the sr and velocity somewhere!!
   FD1Solver sol(dx, xI, eq, llc);
 
@@ -100,7 +107,7 @@ int main()
 
   double dt = 0.005; double T = 100;
   RK3Solver ts(dt, T, &sol, phi);
-  ts.get_solution("Flume2D1eqSource",1);
+  ts.get_solution("Flume2DNoSource",1);
 
   return 0;
 }
