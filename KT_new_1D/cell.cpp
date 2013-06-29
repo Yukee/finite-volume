@@ -1,11 +1,8 @@
 #include "cell.h"
 
-#include <iostream>
-
 double Cell::deriv()
 {
-    std::cout << m_lim.get( (m_u - cl->m_u)/m_delta, (cr->m_u - m_u)/m_delta ) << std::endl;
-    return m_lim.get( (m_u - cl->m_u)/m_delta, (cr->m_u - m_u)/m_delta );
+    return m_lim.get( (u - cl->u)/m_delta, (cr->u - u)/m_delta );
 }
 
 Cell::Cell()
@@ -23,9 +20,17 @@ void Cell::set_delta(double delta)
     m_delta = delta;
 }
 
-Cell & Cell::operator =(const double & u)
+void Cell::evolve(const double dt)
 {
-    m_u = u;
+    // KT scheme
+    double flux = 0.5*(fr + cr->fl) - 0.5*std::max(fabs(ar), fabs(cr->al))*(ur - cr->ul)
+            - 0.5*(fl + cl->fr) + 0.5*std::max(fabs(al), fabs(cl->ar))*(ul - cl->ur);
+    update( m_timestepper.get_unew(u, flux, dt) );
+}
+
+void Cell::update(const double unew)
+{
+    u = unew;
     double du = deriv();
 
     ul = u - 0.5*m_delta*du;
@@ -34,8 +39,6 @@ Cell & Cell::operator =(const double & u)
     fr = flux_r();
     al = a_l();
     ar = a_r();
-
-    return *this;
 }
 
 // linear flux
@@ -65,7 +68,7 @@ std::ostream & operator<<(std::ostream & output, const Cell & c)
     output << "Je suis une cellule 1D\n";
     output << "Je mesure " << c.m_delta << "\n";
     output << "Je contiens les valeurs suivantes :" << "\n";
-    output << "u = " << c.m_u << "\n" << "ul = " << c.ul << "\n" << "ur = " << c.ur << "\n";
+    output << "u = " << c.u << "\n" << "ul = " << c.ul << "\n" << "ur = " << c.ur << "\n";
 
     return output;
 }

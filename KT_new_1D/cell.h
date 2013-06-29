@@ -2,16 +2,15 @@
 #define CELL_H
 
 #include "limiter.h"
+#include "timesolver.h"
 #include <fstream>
+#include <math.h> // fabs
 
 class Cell
 {
 protected:
     // size of the cell
     double m_delta;
-
-    // field value at the centre
-    double m_u;
 
     // return flux value at the edges
     virtual double flux_l();
@@ -27,15 +26,24 @@ protected:
     // return limited derivative at the centre
     virtual double deriv();
 
+    // time evolution
+    TimeSolver m_timestepper;
+
 public:
     Cell();
     Cell(const double delta);
 
     // set cell size
-    void set_delta(double delta);
+    virtual void set_delta(double delta);
+
+    // do the time evolution
+    virtual void evolve(const double dt);
 
     // update m_u, ul, ur, fl, fr, al, ar (after timestepping)
-    Cell & operator=(const double & u);
+    virtual void update(const double u);
+
+    // field value at the centre
+    double u;
 
     // flux value at the edges
     double fl;
