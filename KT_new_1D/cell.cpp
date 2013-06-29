@@ -22,10 +22,13 @@ void Cell::set_delta(double delta)
 
 void Cell::evolve(const double dt)
 {
+    update(u);
+
     // KT scheme
     double flux = 0.5*(fr + cr->fl) - 0.5*std::max(fabs(ar), fabs(cr->al))*(ur - cr->ul)
             - 0.5*(fl + cl->fr) + 0.5*std::max(fabs(al), fabs(cl->ar))*(ul - cl->ur);
-    update( m_timestepper.get_unew(u, flux, dt) );
+
+    u = m_timestepper.get_unew(u, flux, dt);
 }
 
 void Cell::update(const double unew)

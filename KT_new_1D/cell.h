@@ -36,10 +36,10 @@ public:
     // set cell size
     virtual void set_delta(double delta);
 
-    // do the time evolution
+    // do the time evolution: update u, but not the other quantities (they are updated via the update function)
     virtual void evolve(const double dt);
 
-    // update m_u, ul, ur, fl, fr, al, ar (after timestepping)
+    // update ul, ur, fl, fr, al, ar (must be done only after every cell has evolved)
     virtual void update(const double u);
 
     // field value at the centre
