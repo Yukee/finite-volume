@@ -21,17 +21,19 @@ protected:
     virtual double a_r();
 
     // liminter used to get the derivative
-    Limiter m_lim;
+    Limiter *m_lim;
 
     // return limited derivative at the centre
     virtual double deriv();
 
     // time evolution
-    TimeSolver m_timestepper;
+    TimeSolver *m_timestepper;
 
 public:
     Cell();
     Cell(const double delta);
+
+    virtual ~Cell();
 
     // set cell size
     virtual void set_delta(double delta);
@@ -40,7 +42,7 @@ public:
     virtual void evolve(const double dt);
 
     // update ul, ur, fl, fr, al, ar (must be done only after every cell has evolved)
-    virtual void update(const double u);
+    virtual void update();
 
     // field value at the centre
     double u;
@@ -62,7 +64,8 @@ public:
     Cell *cr;
 
     // print infos about the cell
-    friend std::ostream & operator<<(std::ostream & output, const Cell & c);
+    // usage: cell << cout;
+    virtual std::ostream & operator<<(std::ostream & output);
 
 };
 

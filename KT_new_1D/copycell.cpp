@@ -12,8 +12,15 @@ CopyCell::CopyCell(double delta, int boundary) : Cell (delta)
 // no flux is computed, only the value of u is updated. Caution!! The neighbouring inner cell must have evolved BEFORE this function is called.
 void CopyCell::evolve(double dt)
 {
-    Cell::update(u);
+    Cell::update();
 
     if(m_b == -1) u = cr->u;
     if(m_b == 1) u = cl->u;
+}
+
+std::ostream & CopyCell::operator<<(std::ostream & output)
+{
+    output << "Je suis une ghost cell de type CopyCell\n";
+
+    return Cell::operator <<(output);
 }

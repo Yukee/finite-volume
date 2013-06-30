@@ -17,6 +17,7 @@ public:
     // update by copying the new value
     virtual void evolve(double dt);
 
+    virtual std::ostream & operator<<(std::ostream & output);
 };
 
 #endif // COPYCELL_H

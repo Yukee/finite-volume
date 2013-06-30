@@ -6,11 +6,13 @@ SOURCES += main.cpp \
     cell.cpp \
     limiter.cpp \
     copycell.cpp \
-    timesolver.cpp
+    timesolver.cpp \
+    cellarray.cpp
 
 HEADERS += \
     cell.h \
     limiter.h \
     copycell.h \
-    timesolver.h
+    timesolver.h \
+    cellarray.h
 
