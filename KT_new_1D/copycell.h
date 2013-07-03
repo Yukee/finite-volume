@@ -12,10 +12,10 @@ private:
     int m_b;
 
 public:
-    CopyCell(double delta, int boundary);
+    CopyCell(double dx, double dt, int boundary);
 
     // update by copying the new value
-    virtual void evolve(double dt);
+    virtual void evolve();
 
     virtual std::ostream & operator<<(std::ostream & output);
 };

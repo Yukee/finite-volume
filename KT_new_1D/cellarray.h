@@ -4,7 +4,9 @@
 #include <vector>
 #include <string>
 #include <iostream>
+#include <fstream> // print to file
 #include <stdexcept> // invalid_argument
+#include <math.h> // initialization
 
 #include "cell.h"
 
@@ -40,11 +42,12 @@ class CellArray
 private:
 
     double l_;
-    int n_; // the actual number of cells (greater than N!)
+    int ni_; // number of inner cells
+    int no_; // number of outer (ie ghost) cells
+    int n_; // total number of cells
     double llc_;
-
-    Bc left_;
-    Bc right_;
+    double dx_;
+    double dt_;
 
     std::vector<Cell *> grid_;
 
@@ -54,12 +57,23 @@ private:
     // linkage
     void link();
 
-    // update content of the cells
+    // plug in initial data
+    void initialize();
+
+    // update cells content
     void update();
+
+    // print current state to file
+    void print(std::fstream & data);
 
 public:
     // create an array of N+{numb of boundary cells} cells in a region of size L starting at point llc
-    CellArray(double L, int N, double llc, Bc left, Bc right);
+    CellArray(double L, int N, double llc);
+
+    std::vector<Cell *> get_grid();
+
+    // timestepping. T: end time, t: time interval between 2 saves
+    void evolve(double T, double t, std::string name);
 };
 
 #endif // CELLARRAY_H

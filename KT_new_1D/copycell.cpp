@@ -1,6 +1,6 @@
 #include "copycell.h"
 
-CopyCell::CopyCell(double delta, int boundary) : Cell (delta)
+CopyCell::CopyCell(double dx, double dt, int boundary) : Cell (dx, dt)
 {
     if(boundary == -1 || boundary == 1) m_b = boundary;
 
@@ -10,7 +10,7 @@ CopyCell::CopyCell(double delta, int boundary) : Cell (delta)
 }
 
 // no flux is computed, only the value of u is updated. Caution!! The neighbouring inner cell must have evolved BEFORE this function is called.
-void CopyCell::evolve(double dt)
+void CopyCell::evolve()
 {
     Cell::update();
 
