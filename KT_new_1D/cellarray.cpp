@@ -153,11 +153,14 @@ void CellArray::update()
 {
     for(int i=0;i<n_;i++)
     {
-
+        grid_[i]->evolve();
     }
 }
 
 void CellArray::print(std::fstream &data)
 {
-    data << "PROUT";
+    for(int i=0;i<ni_;i++)
+    {
+        data << i*dx_ << "\t" << grid_[i+no_/2]->u << std::endl;
+    }
 }

@@ -8,7 +8,7 @@ public:
     TimeSolver();
 
     // return
-    virtual double get_unew(double u, double flux, double dt);
+    virtual double get_unew(double u, double dudt, double dt);
 };
 
 #endif // TIMESOLVER_H

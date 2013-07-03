@@ -55,10 +55,13 @@ int main()
 
     *pc[2] << cout;
 
-    CellArray ca(0.1, 2*M_PI, 0);
-    vector<Cell *> g = ca.get_grid();
+    CellArray ca(2*M_PI, 50, 0);
 
     ca.evolve(10, 0.1, "test");
+
+    vector<Cell *> g = ca.get_grid();
+
+    *g[0] << cout;
 
     return 0;
 }

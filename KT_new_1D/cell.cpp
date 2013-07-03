@@ -66,17 +66,17 @@ void Cell::evolve()
 {
     update();
 
-    double flux = flux_->get_flux(this);
+    double dudt = -(1/dx_)*flux_->get_flux(this);
 
-    u = timestepper_->get_unew(u, flux, dt_);
+    u = timestepper_->get_unew(u, dudt, dt_);
 }
 
 void Cell::update()
 {
-    double du = deriv();
+    double dudx = deriv();
 
-    ul = u - 0.5*dx_*du;
-    ur = u + 0.5*dx_*du;
+    ul = u - 0.5*dx_*dudx;
+    ur = u + 0.5*dx_*dudx;
     f = flux();
     fl = flux_l();
     fr = flux_r();
