@@ -11,5 +11,5 @@ double LxF::get_flux(Cell *c)
     // speed of the information on the numerical space-time lattice
     double info_speed = c->dx()/c->dt();
 
-    return 0.5*( c->cr->f - c->cl->f - info_speed*(c->cr->u + c->cl->u) );
+    return 0.5*( c->cr->f - c->cl->f - info_speed*(c->cr->u - 2*c->u + c->cl->u) );
 }

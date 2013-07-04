@@ -12,6 +12,9 @@ class SpatialSolver;
 class Cell
 {
 protected:
+    // field value at the centre (before update)
+    double u_;
+
     // size of the cell
     double dx_;
 
@@ -39,7 +42,7 @@ protected:
     TimeSolver *timestepper_;
 
     // flux computation
-    SpatialSolver *flux_;
+    SpatialSolver *method_;
 
 public:
     Cell();
@@ -65,6 +68,8 @@ public:
 
     // update ul, ur, fl, fr, al, ar (must be done only after every cell has evolved)
     virtual void update();
+
+    virtual void set_u(double U);
 
     // field value at the centre
     double u;

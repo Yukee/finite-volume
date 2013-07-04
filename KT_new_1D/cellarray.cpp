@@ -105,7 +105,7 @@ void CellArray::initialize()
 {
     for(int i=0;i<n_;i++)
     {
-        grid_[i]->u = sin(i*dx_);
+        grid_[i]->set_u( sin(i*dx_) );
     }
 }
 
@@ -114,7 +114,7 @@ std::vector<Cell *> CellArray::get_grid()
     return grid_;
 }
 
-void CellArray::evolve(double T, double t, std::string name)
+void CellArray::solve(double T, double t, std::string name)
 {
     // current time
     double ct = 0;
@@ -128,6 +128,7 @@ void CellArray::evolve(double T, double t, std::string name)
     while(ct < T)
     {
         update();
+        evolve();
 
         // update every 0.2 seconds
         if( int(ct*10) % 2  == 0 )
@@ -150,6 +151,14 @@ void CellArray::evolve(double T, double t, std::string name)
 }
 
 void CellArray::update()
+{
+    for(int i=0;i<n_;i++)
+    {
+        grid_[i]->update();
+    }
+}
+
+void CellArray::evolve()
 {
     for(int i=0;i<n_;i++)
     {

@@ -9,13 +9,11 @@ CopyCell::CopyCell(double dx, double dt, int boundary) : Cell (dx, dt)
     if(m_b == 1) cr = this;
 }
 
-// no flux is computed, only the value of u is updated. Caution!! The neighbouring inner cell must have evolved BEFORE this function is called.
+// no flux is computed, only the value of u is updated
 void CopyCell::evolve()
 {
-    Cell::update();
-
-    if(m_b == -1) u = cr->u;
-    if(m_b == 1) u = cl->u;
+    if(m_b == -1) u_ = cr->u;
+    if(m_b == 1) u_ = cl->u;
 }
 
 std::ostream & CopyCell::operator<<(std::ostream & output)

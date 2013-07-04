@@ -63,6 +63,9 @@ private:
     // update cells content
     void update();
 
+    // t -> t + dt
+    void evolve();
+
     // print current state to file
     void print(std::fstream & data);
 
@@ -73,7 +76,7 @@ public:
     std::vector<Cell *> get_grid();
 
     // timestepping. T: end time, t: time interval between 2 saves
-    void evolve(double T, double t, std::string name);
+    void solve(double T, double t, std::string name);
 };
 
 #endif // CELLARRAY_H
