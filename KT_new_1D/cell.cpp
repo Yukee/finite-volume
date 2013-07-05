@@ -3,6 +3,12 @@
 
 #include "spatialsolver.h"
 #include "lxf.h"
+#include "kt1.h"
+#include "kt2.h"
+
+#include "burgers.h"
+#include "lin.h"
+#include "const.h"
 
 double Cell::deriv()
 {
@@ -18,7 +24,10 @@ Cell::Cell(const double dx, const double dt)
 {
     lim_ = new Limiter();
     timestepper_ = new TimeSolver();
-    method_ = new LxF();
+    method_ = new KT2();
+
+    flux_fun_ = new Burgers();
+    a_fun_ = new Lin();
 
     cl = NULL;
     cr = NULL;
@@ -32,6 +41,8 @@ Cell::~Cell()
     if(lim_) delete lim_;
     if(timestepper_) delete timestepper_;
     if(method_) delete method_;
+    if(flux_fun_) delete flux_fun_;
+    if(a_fun_) delete a_fun_;
 }
 
 void Cell::set_dx(double dx)
@@ -73,15 +84,15 @@ void Cell::update()
 {
     u = u_;
 
-    double dudx = deriv();
+    dudx = deriv();
 
     ul = u_ - 0.5*dx_*dudx;
     ur = u_ + 0.5*dx_*dudx;
-    f = flux();
-    fl = flux_l();
-    fr = flux_r();
-    al = a_l();
-    ar = a_r();
+    f = flux_fun_->evaluate(u_);
+    fl = flux_fun_->evaluate(ul);
+    fr = flux_fun_->evaluate(ur);
+    al = a_fun_->evaluate(ul);
+    ar = a_fun_->evaluate(ur);
 }
 
 void Cell::set_u(double U)
@@ -89,32 +100,11 @@ void Cell::set_u(double U)
     u_ = U;
 }
 
-// linear flux
-
-double Cell::flux()
+Function * Cell::get_f()
 {
-    return u;
+    return flux_fun_;
 }
 
-double Cell::flux_l()
-{
-    return ul;
-}
-
-double Cell::flux_r()
-{
-    return ur;
-}
-
-double Cell::a_l()
-{
-    return 1;
-}
-
-double Cell::a_r()
-{
-    return 1;
-}
 
 std::ostream & Cell::operator<<(std::ostream & output)
 {

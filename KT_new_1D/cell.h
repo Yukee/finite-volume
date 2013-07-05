@@ -3,6 +3,7 @@
 
 #include "limiter.h"
 #include "timesolver.h"
+#include "function.h"
 
 #include <fstream>
 #include <math.h> // fabs
@@ -21,16 +22,11 @@ protected:
     // timestep
     double dt_;
 
-    // return flux value at the centre
-    virtual double flux();
+    // flux function
+    Function *flux_fun_;
 
-    // return flux value at the edges
-    virtual double flux_l();
-    virtual double flux_r();
-
-    // return wavespeed value at the edges
-    virtual double a_l();
-    virtual double a_r();
+    // wavespeed function
+    Function *a_fun_;
 
     // liminter used to get the derivative
     Limiter *lim_;
@@ -74,6 +70,9 @@ public:
     // field value at the centre
     double u;
 
+    // derivative
+    double dudx;
+
     // flux value at the centre
     double f;
 
@@ -88,6 +87,8 @@ public:
     // field value at the edges
     double ul;
     double ur;
+
+    Function * get_f();
 
     // pointers to neighbouring cells
     Cell *cl;

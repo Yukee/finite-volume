@@ -55,7 +55,7 @@ int Bc::loc()
 CellArray::CellArray(double L, int N, double llc) : l_(L), ni_(N), llc_(llc)
 {
     // using a 3 points method: need 2 ghost cells
-    no_ = 2;
+    no_ = 0;
 
     n_ = ni_ + no_;
 
@@ -116,6 +116,9 @@ std::vector<Cell *> CellArray::get_grid()
 
 void CellArray::solve(double T, double t, std::string name)
 {
+    // initial setup
+    update();
+
     // current time
     double ct = 0;
 
@@ -127,9 +130,6 @@ void CellArray::solve(double T, double t, std::string name)
 
     while(ct < T)
     {
-        update();
-        evolve();
-
         // update every 0.2 seconds
         if( int(ct*10) % 2  == 0 )
         {
@@ -145,6 +145,9 @@ void CellArray::solve(double T, double t, std::string name)
             data.close();
             wf++;
         }
+
+        update();
+        evolve();
 
         ct += dt_;
     }

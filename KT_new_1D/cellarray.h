@@ -9,6 +9,8 @@
 #include <math.h> // initialization
 
 #include "cell.h"
+#include "copycell.h"
+#include "staggeredcell.h"
 
 // a couple (double, string) to store infos about boundary conditions
 class Bc
