@@ -7,9 +7,9 @@ using namespace std;
 
 int main()
 {
-    CellArray ca(2*M_PI, 50, 0);
+    CellArray ca(8, 100, -1);
 
-    ca.solve(2, 0.1, "test");
+    ca.solve(2, 0.1, "leveque/11.5/burgers");
 
     return 0;
 }

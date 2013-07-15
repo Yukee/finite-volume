@@ -106,9 +106,9 @@ void CellArray::initialize()
     for(int i=0;i<n_;i++)
     {
         double x = i*dx_ + llc_;
-        //if(x>=0 && x<2) grid_[i]->set_u( 2 );
-        //else grid_[i]->set_u( 0 );
-        grid_[i]->set_u( sin(x) );
+        if(x>=0 && x<2) grid_[i]->set_u( 2 );
+        else grid_[i]->set_u( 0 );
+        //grid_[i]->set_u( sin(x) );
     }
 }
 
