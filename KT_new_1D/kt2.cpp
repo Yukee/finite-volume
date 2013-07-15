@@ -7,17 +7,10 @@ KT2::KT2()
 
 double KT2::get_flux(Cell *c)
 {
-    // left and right waves (see Leveque for the definition)
-    //double wl = c->ul - c->cl->ur;
-    //double wr = c->cr->ul - c->ur;
+    // left and right numerical fluxes
+    double fr = 0.5*( (c->fr + c->cr->fl) - fabs(c->ar)*(c->cr->ul - c->ur) );
+    double fl = 0.5*( (c->fl + c->cl->fr) - fabs(c->al)*(c->ul - c->cl->ur) );
 
-    double wl = c->u - c->cl->u;
-    double wr = c->cr->u - c->u;
-
-
-    double a = c->dx()/c->dt();
-
-    //return 0.5*( - a*wr + a*wl + c->cr->fl + c->fr - c->fl - c->cl->fr );
-    return 0.5*( - fabs(c->ar)*wr + fabs(c->al)*wl + c->cr->f - c->cl->f );
+    return fr - fl;
 
 }

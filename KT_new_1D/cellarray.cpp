@@ -68,7 +68,7 @@ CellArray::CellArray(double L, int N, double llc) : l_(L), ni_(N), llc_(llc)
 
 void CellArray::create()
 {
-    dt_ = 0.8*(Cell (dx_, 1)).get_max_dt();
+    dt_ = 0.1*(Cell (dx_, 1)).get_max_dt();
 
     grid_.resize(n_);
 
@@ -105,7 +105,10 @@ void CellArray::initialize()
 {
     for(int i=0;i<n_;i++)
     {
-        grid_[i]->set_u( sin(i*dx_) );
+        double x = i*dx_ + llc_;
+        //if(x>=0 && x<2) grid_[i]->set_u( 2 );
+        //else grid_[i]->set_u( 0 );
+        grid_[i]->set_u( sin(x) );
     }
 }
 
@@ -171,8 +174,12 @@ void CellArray::evolve()
 
 void CellArray::print(std::fstream &data)
 {
+    // position of the centre of current cell
+    double x;
+
     for(int i=0;i<ni_;i++)
     {
-        data << i*dx_ << "\t" << grid_[i+no_/2]->u << std::endl;
+        x = i*dx_ + llc_;
+        data << x << "\t" << grid_[i+no_/2]->u << std::endl;
     }
 }
