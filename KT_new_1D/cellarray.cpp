@@ -68,7 +68,7 @@ CellArray::CellArray(double L, int N, double llc) : l_(L), ni_(N), llc_(llc)
 
 void CellArray::create()
 {
-    dt_ = 0.1*(Cell (dx_, 1)).get_max_dt();
+    dt_ = 0.01*(Cell (dx_, 1)).get_max_dt();
 
     grid_.resize(n_);
 
